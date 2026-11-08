@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>我的小说网站</title>
+<style>
+:root {
+  --bg: #0f0f0f;
+  --card: #1a1a1a;
+  --text: #e8e8e8;
+  --accent: #8b5cf6;
+  --muted: #888;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+header {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  padding: 1.2rem 1rem;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #333;
+}
+header h1 { font-size: 1.4rem; color: var(--accent); }
+.search-bar {
+  margin: 0.8rem 1rem;
+}
+.search-bar input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 20px;
+  border: none;
+  background: #2a2a2a;
+  color: white;
+  font-size: 1rem;
+}
+#app { padding: 0.5rem; }
+.novel-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.novel-card:active { transform: scale(0.98); }
+.cover {
+  width: 70px;
+  height: 100px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+.novel-info h3 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+.novel-info .author { color: var(--muted); font-size: 0.85rem; }
+.novel-info .desc { font-size: 0.9rem; margin-top: 0.4rem; color: #ccc; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.chapter-list, .reader { padding: 1rem; }
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.chapter-item {
+  padding: 0.8rem;
+  background: var(--card);
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.reader h2 { font-size: 1.3rem; margin-bottom: 1rem; text-align: center; }
+.reader-content {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  margin-bottom: 2rem;
+}
+.controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.controls button {
+  flex: 1;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: white;
+  font-size: 0.9rem;
+}
+.font-controls { display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; }
+.font-controls button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #333;
+  color: white;
+  font-size: 1.2rem;
+}
+.nav-btns { display: flex; gap: 0.5rem; }
+.nav-btns button { flex: 1; }
+.empty { text-align: center; color: var(--muted); padding: 2rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 我的小说网站</h1>
+</header>
+<div class="search-bar">
+  <input type="text" id="search" placeholder="搜索小说名称或作者..." oninput="filterNovels()">
+</div>
+<div id="app"></div>
+
+<script>
+const novels = [
+  {
+    id: 1,
+    title: "星河彼岸",
+    author: "林小舟",
+    cover: "🌌",
+    desc: "一个普通高中生意外穿越到未来星际时代，与AI伙伴一起探索宇宙奥秘的故事。",
+    chapters: [
+      { title: "第一章 意外的光", content: "那天晚上，林小舟正准备写作业，窗外突然出现一道刺眼的蓝光。\n\n他跑到阳台，只见天空裂开一道缝，一只银白色的球体缓缓落下。\n\n“这是……UFO？”他喃喃自语。\n\n球体打开，一个全息投影出现：“检测到生命体，欢迎来到星历3026年。”\n\n林小舟愣住了。下一秒，他脚下的地面消失，整个人坠入了光柱之中。" },
+      { title: "第二章 星际课堂", content: "醒来时，林小舟发现自己躺在一张悬浮床上。\n\n四周是透明的穹顶，外面是璀璨的星河。\n\n一个蓝色光球飘过来：“你好，我是你的学习助手，代号小蓝。”\n\n“这里是哪里？”\n\n“星河学院，专门接收来自不同时空的学员。你被选中了。”\n\n林小舟揉了揉眼睛，这比他想象中的科幻片还离谱。" },
+      { title: "第三章 第一次飞行", content: "小蓝教他如何使用个人飞行器。\n\n“把精神力集中在核心上，想象你想去的方向。”\n\n林小舟试着集中注意力，脚下的光环突然亮起，他整个人腾空而起。\n\n“啊啊啊——！”他吓得大叫，却发现自己真的在飞。\n\n星河在脚下缓缓流动，远处有巨大的空间站闪烁着灯光。\n\n这一刻，他终于相信：这不是梦。" }
+    ]
+  },
+  {
+    id: 2,
+    title: "校园怪谈录",
+    author: "夜语",
+    cover: "👻",
+    desc: "高中校园里流传的各种怪谈，有的是真的，有的只是传言……直到有一天，主角亲眼见到了。",
+    chapters: [
+      { title: "第一章 废弃的音乐室", content: "学校后面有一间废弃的音乐室，据说晚上会有钢琴声。\n\n林晓最不信这些。直到某个加班晚自习的晚上，他路过时，真的听到了《致爱丽丝》的旋律。\n\n他推开门，里面空无一人，只有一架蒙尘的钢琴，琴键却在自己动。\n\n“谁在那里？”他大喊。\n\n钢琴突然停了。一张泛黄的照片从琴盖上滑落，照片上是一个穿着旧校服的女生，笑得很甜。" },
+      { title: "第二章 照片里的人", content: "林晓把照片带回了宿舍。\n\n第二天早自习，同桌看到照片，脸色大变：“这不是三年前失踪的学姐吗？听说她最后一次出现就是在音乐室。”\n\n林晓心头一紧。\n\n晚上，他梦见那个女生站在床边，轻声说：“帮我找到乐谱……我还没弹完。”\n\n他惊醒时，发现枕头边多了一张残缺的乐谱。" }
+    ]
+  },
+  {
+    id: 3,
+    title: "末日便利店",
+    author: "阿北",
+    cover: "🏪",
+    desc: "世界末日后，唯一还在营业的24小时便利店。老板是个高中生，顾客却什么都有。",
+    chapters: [
+      { title: "第一章 还在营业", content: "末日第三十七天，城市已经变成废墟。\n\n可林北的便利店还亮着灯。\n\n门上贴着一张纸：“本店正常营业，支持以物易物。”\n\n门外站着一个浑身是伤的男人，递过来一瓶过期的可乐：“这个……能换点吃的吗？”\n\n林北看了看货架，只剩最后几包泡面。“可以，进来坐吧。”\n\n男人进门后，才发现店里还有一个穿白大褂的女人在角落里看书，旁边放着一把手术刀。" }
+    ]
+  }
+];
+
+let currentNovel = null;
+let currentChapter = 0;
+let fontSize = 1.05;
+
+function renderHome(filtered = novels) {
+  const app = document.getElementById('app');
+  if (filtered.length === 0) {
+    app.innerHTML = '<div class="empty">没有找到相关小说</div>';
+    return;
+  }
+  app.innerHTML = filtered.map(n => `
+    <div class="novel-card" onclick="openNovel(${n.id})">
+      <div class="cover">${n.cover}</div>
+      <div class="novel-info">
+        <h3>${n.title}</h3>
+        <div class="author">${n.author}</div>
+        <div class="desc">${n.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openNovel(id) {
+  currentNovel = novels.find(n => n.id === id);
+  document.querySelector('.search-bar').style.display = 'none';
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="chapter-list">
+      <button class="back-btn" onclick="goHome()">← 返回首页</button>
+      <h2>${currentNovel.title}</h2>
+      <p style="color:#888;margin-bottom:1rem;">作者：${currentNovel.author}</p>
+      <p style="margin-bottom:1.5rem;">${currentNovel.desc}</p>
+      ${currentNovel.chapters.map((c, i) => `
+        <div class="chapter-item" onclick="openChapter(${i})">${c.title}</div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function openChapter(index) {
+  currentChapter = index;
+  const ch = currentNovel.chapters[index];
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="reader">
+      <button class="back-btn" onclick="openNovel(${currentNovel.id})">← 返回目录</button>
+      <h2>${ch.title}</h2>
+      <div class="font-controls">
+        <button onclick="changeFont(-0.1)">A-</button>
+        <button onclick="changeFont(0.1)">A+</button>
+      </div>
+      <div class="reader-content" id="content" style="font-size:${fontSize}rem;">${ch.content}</div>
+      <div class="nav-btns">
+        <button onclick="prevChapter()" ${index === 0 ? 'disabled' : ''}>上一章</button>
+        <button onclick="nextChapter()" ${index === currentNovel.chapters.length - 1 ? 'disabled' : ''}>下一章</button>
+      </div>
+    </div>
+  `;
+  window.scrollTo(0, 0);
+}
+
+function changeFont(delta) {
+  fontSize = Math.max(0.8, Math.min(1.6, fontSize + delta));
+  document.getElementById('content').style.fontSize = fontSize + 'rem';
+}
+
+function prevChapter() {
+  if (currentChapter > 0) openChapter(currentChapter - 1);
+}
+function nextChapter() {
+  if (currentChapter < currentNovel.chapters.length - 1) openChapter(currentChapter + 1);
+}
+
+function goHome() {
+  currentNovel = null;
+  document.querySelector('.search-bar').style.display = 'block';
+  renderHome();
+}
+
+function filterNovels() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const filtered = novels.filter(n => 
+    n.title.toLowerCase().includes(q) || n.author.toLowerCase().includes(q)
+  );
+  renderHome(filtered);
+}
+
+// 初始化
+renderHome();
+</script>
+</body>
+</html>
